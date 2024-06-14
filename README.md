@@ -63,6 +63,87 @@ With conda installed, run the following code in terminal line by line (except th
 
 ### Documentation of Relevant Classes Within Project <a name="Documentation-of-Relevant-Classes-Within-Project"></a>
 
+### Bulk Documentation: Further Comments on Public Methods 
+1. [grab_random_image()](#A)
+2. [create_subdirectories()](#B)
+3. [recursive_subdivide()](#C)
+4. [find_children()](#D)
+5. [extract_subarray()](#E)
+   
+#### grab_random_image(folder_path = String) <a name="A"></a>
+
+- **Returns:**
+   A full file path to an image in Sample_Images as a string
+
+- **Affects:**
+   Writes the file name to FS_helper.txt in order to make draws exclusive and keep track of segmented images
+
+- **Inherits**:
+   Functionality from os for directory navigation and text file manipulation
+  
+- **Errors**:
+  'FileNotFoundError' || Occurs when an invalid or incomplete path is passed
+  No or non-image return || Occurs when the Sample Images folder is not passed as an argument
+  
+#### create_subdirectories(path = String) <a name="B"></a>
+
+- **Returns:**
+   None
+
+- **Affects:**
+   Creates subdirectories to store image segments and classifications at the specified path (preferably an external drive path)
+
+- **Inherits**:
+   Functionality from os for directory navigation console text coloring from Fore for warning message
+
+- **Errors**:
+   'FileNotFoundError' || Occurs when an invalid or incomplete path is passed
+  
+  #### recursive_subdivide(node = Node, k = int, minPixelSize = int, img = String) <a name="C"></a>
+
+- **Returns:**
+   None
+
+- **Affects:**
+   Divides Image into quadrants (Nodes -- (see class Node)) to store in a Qtree
+
+- **Inherits**:
+   Functionality from math. This method is globally acessible but technically useless outside of the scope of class QTree as an instance method
+
+#### find_children(node = Node): <a name="D"></a>
+
+- **Returns:**
+   An array of Node objects
+
+- **Affects:**
+   None
+
+- **Inherits**:
+   None. This method is globally acessible but technically useless outside of the scope of class QTree as an instance method
+
+#### extract_subarray(array = int[][], start_row = int, start_col = int, height = int, width = int): <a name="E"></a>
+
+- **Returns:**
+   A 2d array of indices which are a subset of the argument array and defined by the row, col, height, and width arguments
+
+- **Affects:**
+   None
+
+- **Inherits**:
+   None. This method may be interchanged with extract subarray from the opencv module.
+
+#### extract_subarray(array = int[][], start_row = int, start_col = int, height = int, width = int): <a name="E"></a>
+
+- **Returns:**
+   A 2d array of indices which are a subset of the argument array and defined by the row, col, height, and width arguments
+
+- **Affects:**
+   None
+
+- **Inherits**:
+   None. This method may be interchanged with extract subarray from the opencv module.
+
+
 ### Documented Errors <a name="Documented-Errors"></a>
 
 
