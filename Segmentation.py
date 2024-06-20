@@ -43,4 +43,4 @@ print('\n')
 
 spipy.slice_segments(random_image, image_name, home_data, threshold, minCell, helperfilepath)
 
-add_new_sample(spreadsheetpath, image_name)
+add_new_sample(spreadsheetpath, image_name[0:7])
