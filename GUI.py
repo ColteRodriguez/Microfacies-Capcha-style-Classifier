@@ -86,6 +86,7 @@ def display_images():
     # If the labels don't exist, make new ones; if they do, reconfigure them
     if label_large is None:
         label_large = tk.Frame(images_frame)
+        label_large.config(width=400,height=400)
         label_large.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
         label_small = tk.Label(images_frame, image=small_image_tk)
@@ -178,8 +179,9 @@ def select_directory():
     # Reset the image viewer if a new directory is selected
     if label_large is not None:
         # TK has built in delays which makes visuals hard
-        for widget in label_large.winfo_children():
+        for widget, widgit2 in zip(label_large.winfo_children(), label_small.winfo_children()):
             widget.destroy()
+            widget2.destroy()
         images_frame.pack_forget()
         images_frame.destroy()
     
@@ -204,7 +206,7 @@ def update_rating(value):
 
 def submit_action():
     global rating, classif
-    if classif == 'None':
+    if classif == 'Non-Sample':
         classify()
         display_images()
         classif, rating = None, None
