@@ -16,16 +16,13 @@ import os
 home = str(Path(os.getcwd()).parent.parent)
 
 ############## Image Manipulation #################
-def close_secondary():
-    global secondary_window
-    secondary_window.destroy()
-    
-def open_secondary_window(filename):
-    global secondary_window
+def open_secondary_window(frame, filename):
     # Create a new window
-    secondary_window = Toplevel(root)
-    secondary_window.geometry('400x400')
-    app = MW.MainWindow(secondary_window, path=filename)
+    # secondary_window = tk.Frame(root)
+    # secondary_window.pack()  # Position the frame within the main window
+    # secondary_window = Toplevel(root)
+    # secondary_window.geometry('400x400')
+    app = MW.MainWindow(frame, path=filename)
     app.mainloop()
     
 def find_and_outline_segment(large_image_path, small_image_path, outline_width):
@@ -52,7 +49,7 @@ def find_and_outline_segment(large_image_path, small_image_path, outline_width):
     return large_image, small_image
 
 def display_images():
-    global image_paths, recent, label_large, label_small, directory, large_image_area, secondary_window
+    global image_paths, recent, label_large, label_small, directory, large_image_area, images_frame
     
     
     # Choose a random image from the unlabeled directory
@@ -77,39 +74,34 @@ def display_images():
 
     # Convert images to PIL format
     large_image_pil = Image.fromarray(large_image_rgb)
+    image_copy = large_image_pil
     small_image_pil = Image.fromarray(small_image_rgb)
     
-    # Shrink the larger image to fit in the window
-    large_image_pil = large_image_pil.resize((400, 400), Image.LANCZOS)
-    
     # Convert PIL images to ImageTk format
-    large_image_tk = ImageTk.PhotoImage(large_image_pil)
     small_image_tk = ImageTk.PhotoImage(small_image_pil)
 
     images_frame = tk.Frame(root)
     images_frame.pack(side = tk.BOTTOM)
     
-    # If the labels dont exist, make a new ones, if they do reconfigure them
+    # If the labels don't exist, make new ones; if they do, reconfigure them
     if label_large is None:
-        label_large = tk.Label(images_frame, image=large_image_tk)
-        label_large.image = large_image_tk
+        label_large = tk.Frame(images_frame)
         label_large.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-
 
         label_small = tk.Label(images_frame, image=small_image_tk)
         label_small.image = small_image_tk
         label_small.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
     else:
-        label_large.config(image=large_image_tk)
-        label_large.image = large_image_tk  # Keep a reference to avoid garbage collection
+        for widget in label_large.winfo_children():
+            widget.destroy()
         
         label_small.config(image=small_image_tk)
         label_small.image = small_image_tk  # Keep a reference to avoid garbage collection
-        
-    # Close the zoom viewer
-    if secondary_window is None:
-        # Load the image viewer
-        open_secondary_window(large_image)
+    
+    # Open the secondary window inside label_large
+    # NOTE: The Zoom functionality is computationally expensive and may run slow
+    # (or not at all) on slower computers. Consider previous versions
+    open_secondary_window(label_large, image_copy)
     
 ############ Buttons and app functionality ######################
 def update_spreadsheet(features, alteration_score, constituent):
@@ -170,12 +162,26 @@ def classify():
     destination_path = home_data + '/Training_data/All_data/' + classif
     shutil.move(source_path, destination_path)
 
+# Destroy previous labels. Needs function call stack to subvert mainloop resetting labels before branch
+def clear_labels():
+    global label_large, label_small
+    label_large.config(image=None)
+    label_large.image = None  # Keep a reference to avoid garbage collection
+        
+    label_small.config(image=None)
+    label_small.image = None  # Keep a reference to avoid garbage collection
+    
 # Function to select a directory
 def select_directory():
-    global image_paths, large_image, label_large, label_small, directory, scondary_window
+    global image_paths, large_image, label_large, label_small, directory, secondary_window, images_frame
     
     # Reset the image viewer if a new directory is selected
-    scondary_window = None
+    if label_large is not None:
+        # TK has built in delays which makes visuals hard
+        for widget in label_large.winfo_children():
+            widget.destroy()
+        images_frame.pack_forget()
+        images_frame.destroy()
     
     directory = filedialog.askdirectory()
     if directory:
@@ -228,7 +234,7 @@ label_large = None        # Used for formatting
 label_small = None        # Used for formatting images
 classif = None            # The selected constituent
 rating = None             # The selected alteration score
-secondary_window = None
+images_frame = None
 
 # Just ensuring that we have this from outer scope. You can also specify the path explicitly
 f = open(home + '/NAV_helper.txt', 'r')
